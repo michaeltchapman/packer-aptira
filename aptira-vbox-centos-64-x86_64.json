@@ -1,0 +1,42 @@
+{
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "guest_os_type": "RedHat_64",
+      "iso_url": "http://192.168.0.18/CentOS-6.5-x86_64-netinstall.iso",
+      "iso_checksum": "d8aaf698408c0c01843446da4a20b1ac03d27f87aad3b3b7b7f42c6163be83b9",
+      "iso_checksum_type": "sha256",
+      "http_directory": "./http_directory",
+      "ssh_username": "root",
+      "ssh_password": "vagrant",
+      "ssh_wait_timeout": "20m",
+      "shutdown_command": "echo 'test' && sudo -S shutdown -P now",
+      "boot_command": [
+        "<esc>",
+        "<wait>linux ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/anaconda-ks.cfg<enter>"
+      ],
+      "boot_wait": "5s",
+      "disk_size": 40000,
+      "headless": false,
+      "vboxmanage" : [
+        ["modifyvm", "{{.Name}}", "--memory", "1024"],
+        ["modifyvm", "{{.Name}}", "--cpus", "2"]
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "provisioners/install-virtualbox-guest-additions.sh"
+    },
+    {
+      "type": "shell",
+      "script": "provisioners/clean-empty-space.sh"
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "vagrant"
+    }
+  ]
+}
